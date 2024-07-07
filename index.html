@@ -66,6 +66,7 @@
         <a class="button" href="https://azure.microsoft.com/en-us/services/cognitive-services/computer-vision/" target="_blank">Azure Cognitive Services</a>
     </div>
     <canvas id="gameCanvas" width="480" height="320"></canvas>
+    <button id="restartButton">Oyunu Yeniden Başlat</button>
 
     <script>
         // Top-Duvar Oyunu Kodu
@@ -75,13 +76,15 @@
         var ballRadius = 10;
         var x = canvas.width / 2;
         var y = canvas.height - 30;
-        var dx = 2;
-        var dy = -2;
+        var dx = 2; // Başlangıç hızı
+        var dy = -2; // Başlangıç hızı
         var paddleHeight = 10;
         var paddleWidth = 75;
         var paddleX = (canvas.width - paddleWidth) / 2;
         var rightPressed = false;
         var leftPressed = false;
+        var gameOver = false;
+        var requestId;
 
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
@@ -132,7 +135,7 @@
                 if (x > paddleX && x < paddleX + paddleWidth) {
                     dy = -dy;
                 } else {
-                    document.location.reload();
+                    gameOver = true;
                 }
             }
 
@@ -142,12 +145,28 @@
                 paddleX -= 7;
             }
 
-            x += dx;
-            y += dy;
-            requestAnimationFrame(draw);
+            if (!gameOver) {
+                x += dx;
+                y += dy;
+            }
+
+            requestId = requestAnimationFrame(draw);
         }
 
         draw();
+
+        // Yeniden başlat butonu
+        var restartButton = document.getElementById("restartButton");
+        restartButton.addEventListener("click", function() {
+            cancelAnimationFrame(requestId); // Mevcut döngüyü iptal et
+            x = canvas.width / 2;
+            y = canvas.height - 30;
+            dx = 2; // Başlangıç hızı
+            dy = -2; // Başlangıç hızı
+            paddleX = (canvas.width - paddleWidth) / 2;
+            gameOver = false;
+            draw(); // Yeniden çizim işlemini başlat
+        });
     </script>
 </body>
 </html>
